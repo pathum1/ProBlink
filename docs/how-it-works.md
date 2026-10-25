@@ -118,6 +118,8 @@ the extension only talks to `upsd`.
   ProBlink adds `problink-watchdog` (a systemd timer). When `upsc` reports
   `Data stale` or `Driver not connected`, it stops the driver, resets the USB
   device with `usbreset` (falling back to a software unplug/replug through
-  sysfs `authorized`), and starts the driver again.
+  sysfs `authorized`), and starts the driver again. `ups.conf` also sets
+  `pollinterval = 5` (NUT's default is 2) so the driver asks the chip less
+  often.
 - **ViewPower.** ProLink's own Java tool (`upsMonitor.service`) wants the same
   USB device. Use either ViewPower or NUT, not both.

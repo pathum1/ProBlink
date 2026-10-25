@@ -191,7 +191,7 @@ open the settings with `gnome-extensions prefs problink@pathum1.github.com`.
 | Connection | upsd host, port and UPS name (to watch a UPS on another machine), a **Test** button, and **Reset all settings** |
 
 The update interval only controls how often the panel asks NUT. NUT itself
-reads the UPS every `pollinterval` seconds (set in `ups.conf`; the default is 2),
+reads the UPS every `pollinterval` seconds (set in `ups.conf`; ProBlink uses 5),
 so updating the panel faster than that shows nothing new.
 
 ## Uninstall

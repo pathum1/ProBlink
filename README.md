@@ -91,7 +91,8 @@ The installer:
   (existing files are backed up as `*.problink-backup-<date>`)
 - creates a random password for `upsmon`
 - enables NUT so it starts at every boot, and starts it now
-- installs a small watchdog that restarts the NUT driver if it freezes
+- installs a small watchdog that resets the UPS on USB and restarts the NUT
+  driver if the connection freezes
   (see "The panel shows a grey warning icon" below)
 - copies the extension to `~/.local/share/gnome-shell/extensions/` and enables it
 
@@ -129,16 +130,19 @@ Options:
 
 1. Run `upsc ups1`.
 2. If it says `Data stale` or `Driver not connected`, the driver lost the UPS.
-   On the PRO2000SFCU the driver sometimes freezes after a while, even with a
-   good USB connection. The ProBlink watchdog checks every minute and restarts
-   the driver, so it should come back by itself within about a minute.
+   On the PRO2000SFCU the UPS's USB chip sometimes stops answering after a
+   while, even with a good cable. The ProBlink watchdog checks every minute,
+   resets the UPS on USB (like unplugging and replugging the cable) and
+   restarts the driver, so it should come back by itself within about a minute.
    See what the watchdog did with:
    ```
    journalctl -u problink-watchdog
    ```
-   To restart the driver by hand:
+   To do the same by hand:
    ```
-   sudo systemctl restart nut-driver@ups1 nut-server
+   sudo systemctl stop nut-driver@ups1
+   sudo usbreset 0665:5161
+   sudo systemctl start nut-driver@ups1
    ```
 3. If it says `Connection refused`, `upsd` is not running. Run:
    ```

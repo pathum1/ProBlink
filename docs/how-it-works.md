@@ -112,9 +112,12 @@ the extension only talks to `upsd`.
 - **The driver froze.** About 19 minutes after one boot, `nutdrv_qx` stopped
   polling: the process stayed alive but did nothing (no CPU time, no context
   switches), the USB device stayed connected, and `upsd` reported
-  `Data stale` from then on. The driver logged nothing about it. NUT does not
-  restart a driver that hangs without exiting, so ProBlink adds
-  `problink-watchdog` (a systemd timer) that restarts the driver when `upsc`
-  reports `Data stale` or `Driver not connected`.
+  `Data stale` from then on. The driver logged nothing about it. Restarting
+  the driver alone failed with `Device not supported!`: the UPS's USB-serial
+  chip itself had stopped answering. NUT does not recover from this, so
+  ProBlink adds `problink-watchdog` (a systemd timer). When `upsc` reports
+  `Data stale` or `Driver not connected`, it stops the driver, resets the USB
+  device with `usbreset` (falling back to a software unplug/replug through
+  sysfs `authorized`), and starts the driver again.
 - **ViewPower.** ProLink's own Java tool (`upsMonitor.service`) wants the same
   USB device. Use either ViewPower or NUT, not both.

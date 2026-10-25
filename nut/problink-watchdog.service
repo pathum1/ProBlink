@@ -1,0 +1,7 @@
+[Unit]
+Description=ProBlink: restart the NUT driver if the UPS data goes stale
+After=nut-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/problink-watchdog ups1

@@ -109,5 +109,12 @@ the extension only talks to `upsd`.
   cable to a port on the back of the PC fixed it.
 - **NUT never started at boot.** `nut.target` was disabled, so nothing pulled
   in the driver, `upsd` or `upsmon`. `install.sh` enables it.
+- **The driver froze.** About 19 minutes after one boot, `nutdrv_qx` stopped
+  polling: the process stayed alive but did nothing (no CPU time, no context
+  switches), the USB device stayed connected, and `upsd` reported
+  `Data stale` from then on. The driver logged nothing about it. NUT does not
+  restart a driver that hangs without exiting, so ProBlink adds
+  `problink-watchdog` (a systemd timer) that restarts the driver when `upsc`
+  reports `Data stale` or `Driver not connected`.
 - **ViewPower.** ProLink's own Java tool (`upsMonitor.service`) wants the same
   USB device. Use either ViewPower or NUT, not both.

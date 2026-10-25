@@ -91,6 +91,8 @@ The installer:
   (existing files are backed up as `*.problink-backup-<date>`)
 - creates a random password for `upsmon`
 - enables NUT so it starts at every boot, and starts it now
+- installs a small watchdog that restarts the NUT driver if it freezes
+  (see "The panel shows a grey warning icon" below)
 - copies the extension to `~/.local/share/gnome-shell/extensions/` and enables it
 
 Options:
@@ -100,6 +102,7 @@ Options:
 | `--dry-run` | Show every step, change nothing |
 | `--nut-only` | Only set up NUT (for servers or other desktops) |
 | `--extension-only` | Only install the GNOME extension |
+| `--watchdog-only` | Only install the driver watchdog (keeps your NUT config) |
 | `--yes` | Do not ask before replacing NUT config files |
 
 ## Check that it works
@@ -126,7 +129,14 @@ Options:
 
 1. Run `upsc ups1`.
 2. If it says `Data stale` or `Driver not connected`, the driver lost the UPS.
-   Check the USB cable, then run:
+   On the PRO2000SFCU the driver sometimes freezes after a while, even with a
+   good USB connection. The ProBlink watchdog checks every minute and restarts
+   the driver, so it should come back by itself within about a minute.
+   See what the watchdog did with:
+   ```
+   journalctl -u problink-watchdog
+   ```
+   To restart the driver by hand:
    ```
    sudo systemctl restart nut-driver@ups1 nut-server
    ```
@@ -137,8 +147,18 @@ Options:
 
 **ProLink ViewPower is installed.**
 
-ViewPower and NUT both want the same USB device. Use one of them. To turn
-ViewPower off:
+ViewPower and NUT both want the same USB device. Use one of them.
+
+On new kernels (tested on 7.2), ViewPower's bundled Java 17.0.4 crashes at
+start with `NullPointerException ... "anyController" is null`, because
+`/proc/cgroups` is empty. If you want to keep ViewPower instead of NUT, add
+this line to `/opt/ViewPower/upsMonitor.vmoptions`:
+
+```
+-XX:-UseContainerSupport
+```
+
+To turn ViewPower off and use NUT:
 
 ```
 sudo systemctl disable --now upsMonitor.service
@@ -168,7 +188,8 @@ const POLL_SECONDS_ON_BATTERY = 2;
 ```
 gnome-extensions disable problink@pathum1.github.com
 rm -r ~/.local/share/gnome-shell/extensions/problink@pathum1.github.com
-sudo systemctl disable --now nut.target nut-driver@ups1
+sudo systemctl disable --now problink-watchdog.timer nut.target nut-driver@ups1
+sudo rm /etc/systemd/system/problink-watchdog.{service,timer} /usr/local/sbin/problink-watchdog
 ```
 
 Your old NUT config files are kept next to the new ones as
@@ -184,7 +205,7 @@ found by inspecting the driver binary.
 
 ```
 install.sh                         installer
-nut/                               NUT config for ProLink UPSes
+nut/                               NUT config for ProLink UPSes + driver watchdog
 gnome-extension/problink@…/        the GNOME Shell extension
   nut.js                             upsd protocol client (no GNOME Shell code)
   extension.js                       the panel indicator

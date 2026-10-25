@@ -8,6 +8,7 @@
 #   ./install.sh                 everything
 #   ./install.sh --nut-only      only the NUT driver/server/monitor
 #   ./install.sh --extension-only  only the GNOME extension
+#   ./install.sh --watchdog-only   only the driver watchdog (keeps your NUT config)
 #   ./install.sh --dry-run       show what would happen, change nothing
 #   ./install.sh --yes           do not ask before overwriting NUT config
 
@@ -21,16 +22,18 @@ PRODUCT_ID="5161"
 
 DO_NUT=1
 DO_EXT=1
+DO_WATCHDOG=1
 DRY_RUN=0
 ASSUME_YES=0
 
 for arg in "$@"; do
     case "$arg" in
         --nut-only) DO_EXT=0 ;;
-        --extension-only) DO_NUT=0 ;;
+        --extension-only) DO_NUT=0; DO_WATCHDOG=0 ;;
+        --watchdog-only) DO_NUT=0; DO_EXT=0 ;;
         --dry-run) DRY_RUN=1 ;;
         --yes|-y) ASSUME_YES=1 ;;
-        -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "Unknown option: $arg" >&2; exit 2 ;;
     esac
 done
@@ -208,6 +211,19 @@ verify_nut() {
     info "input.voltage:  $(upsc "${UPS_NAME}@localhost" input.voltage 2>/dev/null) V"
 }
 
+# Restarts the driver when it freezes (upsd reports "Data stale").
+install_watchdog() {
+    bold "Installing the driver watchdog"
+    run sudo install -m 755 -o root -g root "$REPO_DIR/nut/problink-watchdog.sh" /usr/local/sbin/problink-watchdog
+    run sudo install -m 644 -o root -g root "$REPO_DIR/nut/problink-watchdog.service" /etc/systemd/system/problink-watchdog.service
+    run sudo install -m 644 -o root -g root "$REPO_DIR/nut/problink-watchdog.timer" /etc/systemd/system/problink-watchdog.timer
+    run sudo systemctl daemon-reload
+    run sudo systemctl enable --now problink-watchdog.timer
+    # Check once right away, so a driver that is frozen now gets restarted.
+    run sudo systemctl start problink-watchdog.service
+    info "Checks the UPS every minute. Log: journalctl -u problink-watchdog"
+}
+
 # ---------------------------------------------------------- extension ----
 
 enable_extension() {
@@ -258,8 +274,9 @@ if (( DO_NUT )); then
     check_usb
     write_nut_config
     start_nut
-    verify_nut
 fi
+(( DO_WATCHDOG )) && install_watchdog
+(( DO_NUT )) && verify_nut
 (( DO_EXT )) && install_extension
 
 bold "Done."

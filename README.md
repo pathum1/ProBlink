@@ -8,12 +8,17 @@ ProLink UPSes and adds a small GNOME Shell extension that shows:
 - battery charge
 - load
 - input / output voltage
-- an icon for **mains power** or **battery power** (yellow on battery, red when low)
-- a dropdown with all values, and notifications when power goes off or comes back
+- a **plug icon on mains power** and a **battery icon on battery power**
+  (the battery icon blinks while the power is off)
+- **amber** below 50 % charge and **red** below 25 % (both levels and colours can be changed)
+- a dropdown with a charge bar and all values, and notifications when power
+  goes off, comes back, or the battery runs low
+- a settings window (click the indicator, then **Settings**)
 
 ```
  [plug]  100%  L 14%  226V          ← top panel, on mains
- [batt]   87%  L 15%  230V          ← on battery (yellow)
+ [batt]   87%  L 15%  230V          ← on battery (icon blinks)
+ [batt]   42%  L 15%  230V          ← below the warning level (amber)
 ```
 
 NUT also shuts the PC down cleanly when the UPS battery runs low.
@@ -176,16 +181,18 @@ sudo systemctl disable --now upsMonitor.service
 
 ## Change the settings
 
-The extension reads from `127.0.0.1:3493` and uses the first UPS that `upsd`
-lists. To read a UPS on another machine, edit the constants at the top of
-`extension.js`:
+Click the indicator in the top panel, then click **Settings**. You can also
+open the settings with `gnome-extensions prefs problink@pathum1.github.com`.
 
-```js
-const NUT_HOST = '127.0.0.1';
-const NUT_PORT = 3493;
-const POLL_SECONDS = 5;
-const POLL_SECONDS_ON_BATTERY = 2;
-```
+| Page | Settings |
+|---|---|
+| Display | Panel position (left, centre, right); which values appear in the panel (charge, load, voltage, runtime); how often to update, on mains and on battery |
+| Alerts | Warning and critical charge levels, and their colours; when the icon blinks (never, while on battery, or only when critical); notifications on or off |
+| Connection | upsd host, port and UPS name (to watch a UPS on another machine), a **Test** button, and **Reset all settings** |
+
+The update interval only controls how often the panel asks NUT. NUT itself
+reads the UPS every `pollinterval` seconds (set in `ups.conf`; the default is 2),
+so updating the panel faster than that shows nothing new.
 
 ## Uninstall
 
@@ -213,6 +220,9 @@ nut/                               NUT config for ProLink UPSes + driver watchdo
 gnome-extension/problink@…/        the GNOME Shell extension
   nut.js                             upsd protocol client (no GNOME Shell code)
   extension.js                       the panel indicator
+  prefs.js                           the settings window
+  schemas/                           settings and their defaults
+  icons/                             the mains (plug) icon
 tools/check-ups.js                 command-line test using the same client
 docs/how-it-works.md               protocol notes
 ```

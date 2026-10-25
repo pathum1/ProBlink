@@ -2,7 +2,15 @@
   "uuid": "problink@pathum1.github.com",
   "name": "ProBlink UPS Monitor",
   "description": "Shows UPS battery charge, load, voltages and mains/battery status in the top panel. Reads from a local Network UPS Tools (NUT) server. Made for ProLink UPSes, works with any UPS that NUT supports.",
-  "shell-version": ["46", "47", "48", "49", "50", "51"],
+  "shell-version": [
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51"
+  ],
   "url": "https://github.com/pathum1/ProBlink",
-  "version": 1
+  "version": 2,
+  "settings-schema": "org.gnome.shell.extensions.problink"
 }

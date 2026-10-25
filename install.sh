@@ -252,6 +252,12 @@ install_extension() {
     local dest="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/$UUID"
     run mkdir -p "$dest"
     run cp -r "$REPO_DIR/gnome-extension/$UUID/." "$dest/"
+    # The settings window needs the compiled settings schema.
+    if command -v glib-compile-schemas >/dev/null; then
+        run glib-compile-schemas "$dest/schemas"
+    else
+        warn "glib-compile-schemas not found; the extension's settings will not work."
+    fi
     if (( DRY_RUN )); then
         printf '    [dry-run] enable %s in org.gnome.shell enabled-extensions\n' "$UUID"
     else

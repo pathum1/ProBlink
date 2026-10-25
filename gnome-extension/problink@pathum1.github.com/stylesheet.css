@@ -1,34 +1,61 @@
-.nut-ups-label {
+.problink-label {
     font-feature-settings: "tnum";
     padding-left: 4px;
 }
 
-.nut-ups-on-battery .nut-ups-label,
-.nut-ups-on-battery .system-status-icon {
-    color: #f6d32d;
-}
-
-.nut-ups-low .nut-ups-label,
-.nut-ups-low .system-status-icon {
-    color: #ff7b63;
-}
-
-.nut-ups-error .nut-ups-label,
-.nut-ups-error .system-status-icon {
+.problink-error .problink-label,
+.problink-error .system-status-icon {
     color: #9a9996;
 }
 
-.nut-ups-status {
+/* Menu rows only show values; keep them at full brightness instead of the
+   greyed-out look GNOME gives to items that cannot be clicked. */
+.problink-item:insensitive {
+    color: inherit;
+}
+
+.problink-header {
+    spacing: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.problink-title {
     font-weight: bold;
 }
 
-.nut-ups-value {
+.problink-subtitle {
+    font-size: 0.85em;
+    color: #9a9996;
+}
+
+.problink-charge {
+    spacing: 12px;
+}
+
+.problink-bar {
+    min-width: 160px;
+    height: 16px;
+    -barlevel-height: 6px;
+    -barlevel-background-color: rgba(128, 128, 128, 0.3);
+    -barlevel-active-background-color: #33d17a;
+    -barlevel-overdrive-color: transparent;
+    -barlevel-overdrive-separator-width: 0;
+}
+
+.problink-value {
     font-feature-settings: "tnum";
     font-weight: bold;
     padding-left: 24px;
 }
 
-.nut-ups-model {
+.problink-charge .problink-value {
+    padding-left: 0;
+    min-width: 3.5em;
+    text-align: right;
+}
+
+.problink-model {
     font-size: 0.85em;
     color: #9a9996;
 }

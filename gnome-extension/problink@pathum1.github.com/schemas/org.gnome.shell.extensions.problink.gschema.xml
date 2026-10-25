@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.problink" path="/org/gnome/shell/extensions/problink/">
+
+    <!-- Updates -->
+    <key name="update-interval" type="i">
+      <range min="1" max="60"/>
+      <default>5</default>
+      <summary>Seconds between updates on mains power</summary>
+    </key>
+    <key name="update-interval-on-battery" type="i">
+      <range min="1" max="60"/>
+      <default>2</default>
+      <summary>Seconds between updates on battery</summary>
+    </key>
+
+    <!-- Panel -->
+    <key name="panel-position" type="s">
+      <choices>
+        <choice value="left"/>
+        <choice value="center"/>
+        <choice value="right"/>
+      </choices>
+      <default>'right'</default>
+      <summary>Side of the top panel</summary>
+    </key>
+    <key name="show-charge" type="b">
+      <default>true</default>
+      <summary>Show the battery charge in the panel</summary>
+    </key>
+    <key name="show-load" type="b">
+      <default>true</default>
+      <summary>Show the load in the panel</summary>
+    </key>
+    <key name="show-voltage" type="b">
+      <default>true</default>
+      <summary>Show the voltage in the panel</summary>
+    </key>
+    <key name="show-runtime" type="b">
+      <default>false</default>
+      <summary>Show the runtime left in the panel while on battery</summary>
+    </key>
+
+    <!-- Alerts -->
+    <key name="warning-level" type="i">
+      <range min="2" max="99"/>
+      <default>50</default>
+      <summary>Charge (%) at or below which the indicator turns the warning colour</summary>
+    </key>
+    <key name="critical-level" type="i">
+      <range min="1" max="98"/>
+      <default>25</default>
+      <summary>Charge (%) at or below which the indicator turns the critical colour</summary>
+    </key>
+    <key name="warning-color" type="s">
+      <default>'#ffbf00'</default>
+      <summary>Warning colour (amber)</summary>
+    </key>
+    <key name="critical-color" type="s">
+      <default>'#f66151'</default>
+      <summary>Critical colour (red)</summary>
+    </key>
+    <key name="blink-mode" type="s">
+      <choices>
+        <choice value="never"/>
+        <choice value="on-battery"/>
+        <choice value="critical"/>
+      </choices>
+      <default>'on-battery'</default>
+      <summary>When the panel icon blinks</summary>
+    </key>
+    <key name="notifications" type="b">
+      <default>true</default>
+      <summary>Notify on power failure, power back and low battery</summary>
+    </key>
+
+    <!-- Connection -->
+    <key name="nut-host" type="s">
+      <default>'127.0.0.1'</default>
+      <summary>Host running upsd</summary>
+    </key>
+    <key name="nut-port" type="i">
+      <range min="1" max="65535"/>
+      <default>3493</default>
+      <summary>upsd port</summary>
+    </key>
+    <key name="ups-name" type="s">
+      <default>''</default>
+      <summary>UPS name in NUT; empty means the first UPS upsd lists</summary>
+    </key>
+  </schema>
+</schemalist>

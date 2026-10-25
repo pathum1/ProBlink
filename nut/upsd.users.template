@@ -1,0 +1,7 @@
+# ProBlink: the account upsmon uses to log in to upsd.
+# install.sh replaces @PASSWORD@ with a random password.
+# Reading UPS values (upsc, the GNOME extension) needs no account.
+
+[upsmon]
+    password = @PASSWORD@
+    upsmon @ROLE@

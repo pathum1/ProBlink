@@ -1,0 +1,19 @@
+# ProBlink: watches the UPS and shuts the PC down cleanly when the
+# battery runs low. install.sh fills in @PASSWORD@ and @ROLE@
+# (@ROLE@ is "primary" on NUT 2.8+, "master" on older NUT).
+
+MONITOR ups1@localhost 1 upsmon @PASSWORD@ @ROLE@
+MINSUPPLIES 1
+
+# What to run when the battery is low (status "OB LB").
+SHUTDOWNCMD "/sbin/shutdown -h +0"
+
+POLLFREQ 5
+POLLFREQALERT 5
+HOSTSYNC 15
+DEADTIME 15
+FINALDELAY 5
+
+# Tells the UPS to cut power after the PC has shut down,
+# so it restarts cleanly when mains comes back.
+POWERDOWNFLAG /etc/killpower
